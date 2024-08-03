@@ -25,10 +25,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,12 +47,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.revoio.taskmanagementapp.R
 import com.revoio.taskmanagementapp.data.AuthState
-import com.revoio.taskmanagementapp.tma.core.Constants.SERVER_CLIENT
+import com.revoio.taskmanagementapp.tma.core.debug
 import com.revoio.taskmanagementapp.tma.presentation.theme.AquaGrey
 import com.revoio.taskmanagementapp.tma.presentation.theme.Black
 import com.revoio.taskmanagementapp.tma.presentation.theme.DarkBlue
@@ -65,12 +68,16 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
     val signupVM : SignupVM = viewModel()
     val signupState by signupVM.signupState.collectAsState()
 
-    val authState = authVM.authState.observeAsState()
+    val authState by authVM.authState.observeAsState()
+    var errorMessage by remember{
+        mutableStateOf("")
+    }
 
     val context = LocalContext.current
 
-    LaunchedEffect(authState.value) {
-        when (authState.value) {
+    LaunchedEffect(authState) {
+        "LaunchedEffect:".debug(TAG)
+        when (authState) {
             is AuthState.Authenticated -> {
                 if(signupState.isEmailInputError) signupVM.setIsEmailInputError(false)
                 if(signupState.isPasswordInputError) signupVM.setIsPasswordInputError(false)
@@ -78,8 +85,7 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
             }
 
             is AuthState.Error -> {
-
-                (authState.value as AuthState.Error).message.let { resMsg ->
+                (authState as? AuthState.Error)?.message.let { resMsg ->
                     Log.d(TAG, "Signup: $resMsg")
                     when (resMsg) {
                         "The email address is already in use by another account." -> {
@@ -101,18 +107,21 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
                         else -> {}
                     }
 
-                Toast.makeText(
-                    context,
-                    resMsg,
-                    Toast.LENGTH_SHORT
-                ).show()
+                    Toast.makeText(
+                        context,
+                        resMsg,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
-
             }
 
             else -> Unit
         }
+    }
+
+    DisposableEffect(key1 = errorMessage) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        onDispose { errorMessage = "" }
     }
 
     val launcher = rememberLauncherForActivityResult(
@@ -131,12 +140,9 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            /*verticalArrangement = Arrangement.Center,*/
-            /*horizontalAlignment = Alignment.CenterHorizontally*/
         ) {
             Spacer(modifier = Modifier.height(78.dp))
             Text(
@@ -152,14 +158,14 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(39.dp))
+            Spacer(modifier = Modifier.height(34.dp))
             Text(
                 text = "Username",
                 color = Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(7.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -182,14 +188,14 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
                     )
                 }
             )
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             Text(
                 text = "Email",
                 color = Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(7.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -222,14 +228,14 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
                 },
                 isError = signupState.isEmailInputError,
             )
-            Spacer(modifier = Modifier.height(35.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = "Password",
                 color = Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(7.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -370,7 +376,5 @@ fun Signup(modifier: Modifier = Modifier, navController: NavController, authVM: 
                 }
             }
         }
-
     }
-
 }

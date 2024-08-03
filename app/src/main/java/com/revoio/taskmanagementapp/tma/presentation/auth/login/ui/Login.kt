@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -131,12 +132,9 @@ fun Login(modifier: Modifier = Modifier, navController: NavController, authVM: A
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            /*verticalArrangement = Arrangement.Center,*/
-            /*horizontalAlignment = Alignment.CenterHorizontally*/
         ) {
             Spacer(modifier = Modifier.height(78.dp))
             Text(

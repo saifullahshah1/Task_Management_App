@@ -7,8 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.revoio.taskmanagementapp.tma.presentation.auth.login.ui.Login
 import com.revoio.taskmanagementapp.tma.presentation.auth.signup.Signup
+import com.revoio.taskmanagementapp.tma.presentation.task_creation.CreateTask
 import com.revoio.taskmanagementapp.ui.screens.Home
-import com.revoio.taskmanagementapp.ui.screens.OnBoarding
+import com.revoio.taskmanagementapp.tma.presentation.onBoarding.OnBoarding
 import com.revoio.taskmanagementapp.vm.AuthVM
 
 @Composable
@@ -26,6 +27,9 @@ fun MyAppNavigation(navController:NavHostController,modifier: Modifier = Modifie
         }
         composable("home") {
             Home(modifier,navController,authVM)
+        }
+        composable("create_task") {
+            CreateTask(modifier,navController)
         }
     })
 }

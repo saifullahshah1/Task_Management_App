@@ -6,7 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
@@ -18,7 +22,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val authVM : AuthVM by viewModels()
+        val authVM: AuthVM by viewModels()
 
         setContent {
             TaskManagementAppTheme(
@@ -26,10 +30,15 @@ class MainActivity : ComponentActivity() {
             ) {
                 val navController = rememberNavController()
 
-                Scaffold (modifier = Modifier.fillMaxSize()){ innerPadding ->
+                Scaffold(
+                    modifier = Modifier
+                        .safeContentPadding()
+                        .fillMaxSize(),
+                ) { innerPadding ->
                     MyAppNavigation(
                         navController,
-                        modifier = Modifier.padding(innerPadding), authVM = authVM)
+                        modifier = Modifier.padding(innerPadding), authVM = authVM
+                    )
                 }
             }
         }

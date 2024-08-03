@@ -40,5 +40,11 @@ fun Home(modifier: Modifier = Modifier, navController: NavController, authVM: Au
         }) {
             Text(text = "Sign-Out")
         }
+        Button(onClick = {
+            navController.navigate("create_task")
+        }) {
+            Text(text = "Create Task")
+        }
+
     }
 }
